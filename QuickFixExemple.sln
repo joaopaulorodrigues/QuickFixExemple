@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderGenerator", "OrderGenerator\OrderGenerator.csproj", "{69DCF103-D251-4479-ADB1-2355BEDC3D2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderAccumulator", "OrderAccumulator\OrderAccumulator.csproj", "{CCC6D81B-94C3-4E22-9FDD-0AD522D919FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69DCF103-D251-4479-ADB1-2355BEDC3D2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69DCF103-D251-4479-ADB1-2355BEDC3D2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69DCF103-D251-4479-ADB1-2355BEDC3D2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69DCF103-D251-4479-ADB1-2355BEDC3D2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCC6D81B-94C3-4E22-9FDD-0AD522D919FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCC6D81B-94C3-4E22-9FDD-0AD522D919FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCC6D81B-94C3-4E22-9FDD-0AD522D919FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCC6D81B-94C3-4E22-9FDD-0AD522D919FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
