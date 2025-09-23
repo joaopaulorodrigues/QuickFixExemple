@@ -1,3 +1,4 @@
+using OrderGenerator.Domain;
 using OrderGenerator.Infra.Interfaces;
 using OrderGenerator.Infra.Services;
 using QuickFix;

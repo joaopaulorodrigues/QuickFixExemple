@@ -1,6 +1,8 @@
 using OrderAccumulator.Domain.Data;
 using QuickFix;
 using QuickFix.Fields;
+using QuickFix.FIX44;
+using Message = QuickFix.Message;
 
 namespace OrderAccumulator.Infra;
 
@@ -24,45 +26,41 @@ public class AcceptorService: MessageCracker, IApplication
     public void OnLogon(SessionID sessionID) { }
     public void ToAdmin(Message message, SessionID sessionID) { }
 
-    public void OnMessage(QuickFix.FIX44.NewOrderSingle n, SessionID s)
+    public void OnMessage(NewOrderSingle n, SessionID s)
     {
         Symbol symbol = n.Symbol;
         Side side = n.Side;
-        OrdType ordType = n.OrdType;
         OrderQty orderQty = n.OrderQty;
         Price price = n.Price;
         ClOrdID clOrdID = n.ClOrdID;
 
+        var (execType, ordStatus) = SetExposure(symbol, side, orderQty, price);
+        var exReport = GetExecutionReport(n, execType, ordStatus, symbol, side, orderQty, price, clOrdID);
+        SendReport(s, exReport);
+    }
+
+    private (ExecType, OrdStatus) SetExposure(Symbol symbol, Side side, OrderQty orderQty, Price price)
+    {
+        ExecType execType;
+        OrdStatus ordStatus;
         if (exposure.SetExposure(symbol, side, orderQty, price))
         {
+            execType = new ExecType(ExecType.NEW);
+            ordStatus = new OrdStatus(OrdStatus.NEW);
             Console.WriteLine("Executada");
         }
         else
         {
+            execType = new ExecType(ExecType.REJECTED);
+            ordStatus = new OrdStatus(OrdStatus.REJECTED);
             Console.WriteLine("Ultrapassou a exposição financeira");
         }
 
+        return (execType,  ordStatus);
+    }
 
-    QuickFix.FIX44.ExecutionReport exReport = new QuickFix.FIX44.ExecutionReport(
-            new OrderID(GenOrderID()),
-            new ExecID(GenExecID()),
-            new ExecType(ExecType.FILL),
-            new OrdStatus(OrdStatus.FILLED),
-            symbol, //shouldn't be here?
-            side,
-            new LeavesQty(0),
-            new CumQty(orderQty.Value),
-            new AvgPx(price.Value));
-
-        exReport.Set(clOrdID);
-        exReport.Set(symbol);
-        exReport.Set(orderQty);
-        exReport.Set(new LastQty(orderQty.Value));
-        exReport.Set(new LastPx(price.Value));
-
-        if (n.IsSetAccount())
-            exReport.SetField(n.Account);
-
+    private static void SendReport(SessionID s, ExecutionReport exReport)
+    {
         try
         {
             Session.SendToTarget(exReport, s);
@@ -78,4 +76,28 @@ public class AcceptorService: MessageCracker, IApplication
         }
     }
 
+    private ExecutionReport GetExecutionReport(NewOrderSingle n, ExecType execType, OrdStatus ordStatus, Symbol symbol, Side side,
+        OrderQty orderQty, Price price, ClOrdID clOrdID)
+    {
+        ExecutionReport exReport = new ExecutionReport(
+            new OrderID(GenOrderID()),
+            new ExecID(GenExecID()),
+            execType,
+            ordStatus,
+            symbol, //shouldn't be here?
+            side,
+            new LeavesQty(0),
+            new CumQty(orderQty.Value),
+            new AvgPx(price.Value));
+
+        exReport.Set(clOrdID);
+        exReport.Set(symbol);
+        exReport.Set(orderQty);
+        exReport.Set(new LastQty(orderQty.Value));
+        exReport.Set(new LastPx(price.Value));
+
+        if (n.IsSetAccount())
+            exReport.SetField(n.Account);
+        return exReport;
+    }
 }

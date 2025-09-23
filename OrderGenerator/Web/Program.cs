@@ -1,11 +1,8 @@
-using System.Text.Json;
+using System.Net.WebSockets;
 using OrderGenerator.Application.DependencyInjections;
+using OrderGenerator.Domain;
 using OrderGenerator.Infra.DependencyInjections;
-using OrderGenerator.Infra.Interfaces;
-using OrderGenerator.Infra.Services;
-using QuickFix;
-using QuickFix.Logger;
-using QuickFix.Store;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddApplicationDepedencies();
 builder.Services.AddInfraDepedencies();
-
+builder.Services.AddScoped<StatusOrder>(_ => new StatusOrder { Id = Guid.NewGuid() });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

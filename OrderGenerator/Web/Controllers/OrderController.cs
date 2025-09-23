@@ -13,7 +13,12 @@ public class OrderController : ControllerBase
     {
         _newOrderUseCase = newOrderUseCase;
     }
-
+    
+    [HttpGet("{id}")]
+    public IActionResult Get(Guid  id)
+    {
+        return Ok();
+    }
     [HttpPost]
     public IActionResult Post(NewOrderRequest  request)
     {

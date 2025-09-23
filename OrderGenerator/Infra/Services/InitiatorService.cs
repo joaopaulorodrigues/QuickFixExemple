@@ -1,6 +1,8 @@
 using OrderGenerator.Infra.Interfaces;
 using QuickFix;
 using QuickFix.Fields;
+using QuickFix.FIX44;
+using Message = QuickFix.Message;
 
 namespace OrderGenerator.Infra.Services;
 
@@ -10,7 +12,6 @@ public class InitiatorService: MessageCracker, IApplication, IInitiatorServices
 
     public void FromAdmin(Message message, SessionID sessionId) { }
     public void ToAdmin(Message message, SessionID sessionId) { }
-
     public void ToApp(Message message, SessionID sessionId)
     {
         try
@@ -29,8 +30,6 @@ public class InitiatorService: MessageCracker, IApplication, IInitiatorServices
         Console.WriteLine();
         Console.WriteLine("OUT: " + message.ConstructString());
     }
-
-
     public void FromApp(Message message, SessionID sessionId)
     {
         Console.WriteLine("IN:  " + message.ConstructString());
@@ -45,17 +44,24 @@ public class InitiatorService: MessageCracker, IApplication, IInitiatorServices
             Console.WriteLine(ex.StackTrace);
         }
     }
-
     public void OnCreate(SessionID sessionId)
     {
         _session = Session.LookupSession(sessionId);
         if (_session is null)
             throw new ApplicationException("Somehow session is not found");
     }
-
     public void OnLogon(SessionID sessionId) { Console.WriteLine("Logon - " + sessionId); }
     public void OnLogout(SessionID sessionId) { Console.WriteLine("Logout - " + sessionId); }
-    
+
+    public void OnMessage(ExecutionReport n, SessionID s)
+    {
+        ExecType execType = n.ExecType;
+        if(execType.Value == ExecType.NEW)
+            Console.WriteLine(" Executada ");
+        else
+            Console.WriteLine(" Não executada ");
+    }
+
     public bool SendMessage(Message m)
     {
         if (_session is not null)
