@@ -1,3 +1,4 @@
+using OrderGenerator.Domain;
 using OrderGenerator.Infra.Interfaces;
 using QuickFix;
 using QuickFix.Fields;
@@ -6,7 +7,7 @@ using Message = QuickFix.Message;
 
 namespace OrderGenerator.Infra.Services;
 
-public class InitiatorService: MessageCracker, IApplication, IInitiatorServices
+public class InitiatorService(OrdersInfo ordersInfo): MessageCracker, IApplication, IInitiatorServices
 {
     private Session? _session = null;
 
@@ -56,10 +57,17 @@ public class InitiatorService: MessageCracker, IApplication, IInitiatorServices
     public void OnMessage(ExecutionReport n, SessionID s)
     {
         ExecType execType = n.ExecType;
-        if(execType.Value == ExecType.NEW)
+        ClOrdID clOrdId = n.ClOrdID;
+        if (execType.Value == ExecType.NEW)
+        {
+            ordersInfo.Status[new Guid(clOrdId.Value)] = OrderStatus.Processed;
             Console.WriteLine(" Executada ");
+        }
         else
+        {
+            ordersInfo.Status[new Guid(clOrdId.Value)] = OrderStatus.Rejected;
             Console.WriteLine(" Não executada ");
+        }
     }
 
     public bool SendMessage(Message m)

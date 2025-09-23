@@ -21,21 +21,31 @@ public class FinancialExposure
 
     public bool SetExposure(Symbol symbol, Side side, OrderQty qtd, Price price)
     {
-        decimal order = qtd.Value*price.Value;
-        var exposure = ExposureData[symbol.Value];
-        if (side.Value == Side.BUY)
+        if (!ExposureData.TryGetValue(symbol.Value, out var currentExposure))
+            return false;
+        
+        decimal orderValue = qtd.Value * price.Value;
+        decimal newExposure = currentExposure;
+
+        switch (side.Value)
         {
-            var newExposure = exposure + order;
-            if (newExposure > LIMIT)
+            case Side.BUY:
+                newExposure += orderValue;
+                if (newExposure >= LIMIT)
+                    return false;
+                break;
+
+            case Side.SELL:
+                newExposure -= orderValue;
+                if (newExposure < 0)
+                    return false;
+                break;
+
+            default:
                 return false;
-            ExposureData[symbol.Value] = newExposure;
-            return true;
         }
-        else if (side.Value == Side.SELL)
-        { 
-            ExposureData[symbol.Value] = exposure - order;
-            return true;
-        }
-        return false;
+
+        ExposureData[symbol.Value] = newExposure;
+        return true;
     }
 }

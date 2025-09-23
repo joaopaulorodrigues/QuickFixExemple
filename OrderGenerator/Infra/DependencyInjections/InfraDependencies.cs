@@ -15,15 +15,19 @@ public static class InfraDependencies
         string file = "initiator.cfg";
 
         try
-        {
+        { 
+            var teste = new OrdersInfo();
+
             SessionSettings settings = new SessionSettings(file);
-            InitiatorService application = new InitiatorService();
+            InitiatorService application = new InitiatorService(teste);
             IMessageStoreFactory storeFactory = new FileStoreFactory(settings);
 
             ILogFactory logFactory = new ScreenLogFactory(settings);
             QuickFix.Transport.SocketInitiator initiator = new QuickFix.Transport.SocketInitiator(application, storeFactory, settings, logFactory);
-
+            
+            services.AddScoped<OrdersInfo>(_ =>  teste );
             services.AddSingleton<IInitiatorServices>(application);
+            
             initiator.Start();
         }
         catch (Exception e)

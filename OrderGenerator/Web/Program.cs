@@ -1,6 +1,6 @@
-using System.Net.WebSockets;
 using OrderGenerator.Application.DependencyInjections;
-using OrderGenerator.Domain;
+using FluentValidation;
+using OrderGenerator.Domain.NewOrder;
 using OrderGenerator.Infra.DependencyInjections;
 
 
@@ -13,7 +13,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddApplicationDepedencies();
 builder.Services.AddInfraDepedencies();
-builder.Services.AddScoped<StatusOrder>(_ => new StatusOrder { Id = Guid.NewGuid() });
+builder.Services.AddScoped<IValidator<NewOrderRequest>, NewOrderRequestValidator>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

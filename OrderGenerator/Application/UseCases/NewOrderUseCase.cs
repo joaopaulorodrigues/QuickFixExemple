@@ -1,4 +1,5 @@
 using OrderGenerator.Application.UseCases.Interfaces.Interfaces;
+using OrderGenerator.Domain;
 using OrderGenerator.Domain.NewOrder;
 using OrderGenerator.Infra.Interfaces;
 using QuickFix;
@@ -9,19 +10,24 @@ using Symbol = QuickFix.Fields.Symbol;
 
 namespace OrderGenerator.Application.UseCases;
 
-public class NewOrderUseCase(IInitiatorServices initiatorService) : INewOrderUseCase
+public class NewOrderUseCase(IInitiatorServices initiatorService, OrdersInfo ordersInfo) : INewOrderUseCase
 {
     public bool Create(NewOrderRequest request)
     {
         NewOrderSingle m = QueryNewOrderSingle44(request);
-        return initiatorService.SendMessage(m);
+        var sendMessage = initiatorService.SendMessage(m);
+        if(sendMessage)
+        {
+            ordersInfo.Status.Add(request.OrderId, OrderStatus.Sent);
+        }
+        return sendMessage;
     }
     private NewOrderSingle QueryNewOrderSingle44(NewOrderRequest request)
     {
         OrdType ordType = new OrdType(OrdType.MARKET);
 
         NewOrderSingle newOrderSingle = new NewOrderSingle(
-            new ClOrdID("d"),
+            new ClOrdID(request.OrderId.ToString()),
             new Symbol(request.Symbol),
             new Side(request.Side),
             new TransactTime(DateTime.Now),
