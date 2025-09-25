@@ -14,7 +14,16 @@ builder.Services.AddOpenApi();
 builder.Services.AddApplicationDepedencies();
 builder.Services.AddInfraDepedencies();
 builder.Services.AddScoped<IValidator<NewOrderRequest>, NewOrderRequestValidator>();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyPolicy",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -27,7 +36,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
+app.UseCors("MyPolicy");
 app.MapControllers();
 
 app.Run();

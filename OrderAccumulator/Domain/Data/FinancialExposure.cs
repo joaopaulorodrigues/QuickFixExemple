@@ -4,7 +4,7 @@ namespace OrderAccumulator.Domain.Data;
 
 public class FinancialExposure
 {
-    private decimal LIMIT = 100000;
+    private decimal LIMIT = 100000000;
     private IDictionary<string, decimal> ExposureData;
 
     public FinancialExposure()

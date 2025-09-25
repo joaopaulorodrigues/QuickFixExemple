@@ -18,13 +18,13 @@ namespace OrderGenerator.Domain.NewOrder
 
             RuleFor(x => x.Price)
                 .NotEmpty().WithMessage(ErrorMessages.EmptyValue)
-                .LessThan(1000).WithMessage(ErrorMessages.Exceeded1000)
-                .GreaterThan((decimal)0.01).WithMessage(ErrorMessages.GreaterThan001);
+                .LessThanOrEqualTo(1000).WithMessage(ErrorMessages.Exceeded1000)
+                .GreaterThanOrEqualTo((decimal)0.01).WithMessage(ErrorMessages.GreaterThan001);
             
             RuleFor(x => x.OrderQty)
                 .NotEmpty().WithMessage(ErrorMessages.EmptyValue)
-                .LessThan(100000).WithMessage(ErrorMessages.Exceeded100000)
-                .GreaterThan(0).WithMessage(ErrorMessages.GreaterThan0);
+                .LessThanOrEqualTo(100000).WithMessage(ErrorMessages.Exceeded100000)
+                .GreaterThanOrEqualTo(0).WithMessage(ErrorMessages.GreaterThan0);
         }
 
     }
